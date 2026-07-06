@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hTab - System Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body class="theme-classic crt-enabled">
+  <!-- CRT Screen Overlay Effect Wrapper -->
+  <div class="crt-overlay"></div>
+  <div class="crt-bezel"></div>
+  
+  <div class="terminal-container" id="terminal">
+    <!-- Top Header: Stats Panels -->
+    <header class="htop-header">
+      <!-- Left Stats Column (CPU, Memory, Swap Meters) -->
+      <div class="stats-left" id="meters-container">
+        <!-- Will be populated dynamically via JavaScript -->
+      </div>
+      
+      <!-- Right Stats Column (Task Counts, Load Average, Uptime) -->
+      <div class="stats-right" id="summary-container">
+        <!-- Will be populated dynamically via JavaScript -->
+      </div>
+    </header>
+    
+    <!-- Table Header (Column Titles) -->
+    <div class="process-header-row" id="process-header">
+      <!-- Will be populated dynamically via JavaScript -->
+    </div>
+    
+    <!-- Scrollable Process List -->
+    <main class="process-list-container" id="process-list" tabindex="0">
+      <!-- Will be populated dynamically via JavaScript -->
+    </main>
+    
+    <!-- Search / Filter Interactive Bar (Appears when active) -->
+    <div class="prompt-bar hidden" id="prompt-bar">
+      <span class="prompt-label" id="prompt-label">Search:</span>
+      <input type="text" class="prompt-input" id="prompt-input" autocomplete="off" spellcheck="false">
+    </div>
+    
+    <!-- Setup Overlay Panel (F2) -->
+    <div class="modal-overlay hidden" id="setup-modal">
+      <div class="modal-content">
+        <h2 class="modal-title">Setup - Configuration</h2>
+        <div class="setup-tabs">
+          <button class="setup-tab-btn active" data-tab="themes">Color Themes</button>
+          <button class="setup-tab-btn" data-tab="display">Display Settings</button>
+        </div>
+        <div class="setup-tab-content active" id="tab-themes">
+          <ul class="setup-list" id="theme-list">
+            <li data-theme="classic" class="selected">Classic htop</li>
+            <li data-theme="dracula">Dracula</li>
+            <li data-theme="monokai">Monokai</li>
+            <li data-theme="matrix">Matrix Green</li>
+            <li data-theme="solarized">Solarized Dark</li>
+            <li data-theme="light">Light Mode</li>
+          </ul>
+        </div>
+        <div class="setup-tab-content" id="tab-display">
+          <ul class="setup-list">
+            <li id-toggle="crt-toggle" class="selected-checkbox">CRT Screen Overlay (On/Off)</li>
+            <li id-toggle="flicker-toggle" class="selected-checkbox">CRT Flicker (On/Off)</li>
+            <li id-toggle="scanline-toggle" class="selected-checkbox">CRT Scanlines (On/Off)</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          Press <span class="key-tag">Esc</span> or <span class="key-tag">F2</span> to close Setup.
+        </div>
+      </div>
+    </div>
+    
+    <!-- Help Overlay Panel (F1) -->
+    <div class="modal-overlay hidden" id="help-modal">
+      <div class="modal-content help-content">
+        <h2 class="modal-title">hTab - Help & Keyboard Shortcuts</h2>
+        <div class="help-grid">
+          <div>
+            <h3>Navigation</h3>
+            <p><span class="key-tag">↑</span> / <span class="key-tag">↓</span> : Move selection line</p>
+            <p><span class="key-tag">PgUp</span> / <span class="key-tag">PgDn</span> : Scroll page up/down</p>
+            <p><span class="key-tag">Home</span> / <span class="key-tag">End</span> : Jump to first/last process</p>
+            <p><span class="key-tag">Space</span> : Tag / Untag selected process</p>
+            <p><span class="key-tag">Enter</span> : Focus / Switch to selected tab</p>
+          </div>
+          <div>
+            <h3>Actions</h3>
+            <p><span class="key-tag">F1</span> / <span class="key-tag">1</span> / <span class="key-tag">h</span> : Show Help</p>
+            <p><span class="key-tag">F2</span> / <span class="key-tag">2</span> / <span class="key-tag">s</span> : Open Setup (Themes)</p>
+            <p><span class="key-tag">F3</span> / <span class="key-tag">3</span> / <span class="key-tag">/</span> : Search tab command</p>
+            <p><span class="key-tag">F4</span> / <span class="key-tag">4</span> / <span class="key-tag">\</span> : Filter process list</p>
+            <p><span class="key-tag">F5</span> / <span class="key-tag">5</span> / <span class="key-tag">t</span> : Toggle Tree View (by Domain)</p>
+            <p><span class="key-tag">F6</span> / <span class="key-tag">6</span> / <span class="key-tag">o</span> : Sort by column</p>
+            <p><span class="key-tag">F9</span> / <span class="key-tag">9</span> / <span class="key-tag">k</span> : Kill selection (Close tab)</p>
+            <p><span class="key-tag">F10</span> / <span class="key-tag">0</span> / <span class="key-tag">q</span> : Quit (Close new tab)</p>
+          </div>
+        </div>
+        <div class="help-about">
+          <p><strong>hTab v1.0.0</strong> - A cross-browser extension developed using Manifest V3.</p>
+          <p>Processes labeled with real domain URLs are actual active browser tabs! Killing them closes the tab instantly. Background tasks are simulated browser sub-systems.</p>
+        </div>
+        <div class="modal-footer">
+          Press <span class="key-tag">Esc</span> or <span class="key-tag">F1</span> to close Help.
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer: Interactive Key Bar -->
+    <footer class="htop-footer" id="footer-buttons">
+      <button class="footer-btn" data-key="F1"><span class="f-key">F1</span><span class="f-label">Help</span></button>
+      <button class="footer-btn" data-key="F2"><span class="f-key">F2</span><span class="f-label">Setup</span></button>
+      <button class="footer-btn" data-key="F3"><span class="f-key">F3</span><span class="f-label">Search</span></button>
+      <button class="footer-btn" data-key="F4"><span class="f-key">F4</span><span class="f-label">Filter</span></button>
+      <button class="footer-btn" data-key="F5"><span class="f-key">F5</span><span class="f-label">Tree</span></button>
+      <button class="footer-btn" data-key="F6"><span class="f-key">F6</span><span class="f-label">SortBy</span></button>
+      <button class="footer-btn" data-key="F7"><span class="f-key">F7</span><span class="f-label">Nice -</span></button>
+      <button class="footer-btn" data-key="F8"><span class="f-key">F8</span><span class="f-label">Nice +</span></button>
+      <button class="footer-btn" data-key="F9"><span class="f-key">F9</span><span class="f-label">Kill</span></button>
+      <button class="footer-btn" data-key="F10"><span class="f-key">F10</span><span class="f-label">Quit</span></button>
+    </footer>
+  </div>
+  
+  <script src="newtab.js"></script>
+</body>
+</html>
